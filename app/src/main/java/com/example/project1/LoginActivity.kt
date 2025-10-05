@@ -1,6 +1,5 @@
 package com.example.project1
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,9 +33,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Project1Theme {
-                LoginScreen(
-                    modifier = Modifier.fillMaxSize()
-                )
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    LoginScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
@@ -50,7 +50,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -98,6 +98,10 @@ fun checkCredentials(username: String, password: String): Boolean {
 @Composable
 fun Preview() {
     Project1Theme {
-        LoginScreen(modifier = Modifier.fillMaxSize())
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            LoginScreen(
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }

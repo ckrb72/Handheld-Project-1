@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Project1</string>
     <string name="title_activity_main_search">MainSearchActivity</string>
+    <string name="title_activity_sources">SourcesActivity</string>
 </resources>
