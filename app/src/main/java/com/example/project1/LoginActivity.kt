@@ -5,12 +5,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,32 +68,56 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 40.dp)
         )
 
-        TextField(
-            value = username,
-            onValueChange = {newValue -> username = newValue},
-            singleLine = true,
-            label = { Text("Username") }
-        )
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(16.dp).fillMaxHeight(0.5f),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            border = BorderStroke(1.dp, Color.Gray),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Row(
+                    modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {newValue -> username = newValue},
+                        singleLine = true,
+                        label = { Text("Username") }
+                    )
+                }
 
-        Spacer(
-            Modifier.height(25.dp)
-        )
+                Row(
+                    modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { newValue -> password = newValue },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        label = { Text("Password") }
+                    )
+                }
 
-        TextField(
-            value = password,
-            onValueChange = {newValue -> password = newValue},
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            label = { Text("Password") }
-        )
-
-        Button(
-            enabled = checkCredentials(username, password),
-            onClick = {
-                val intent = Intent(context, MainSearchActivity::class.java)
-                context.startActivity(intent)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        enabled = checkCredentials(username, password),
+                        onClick = {
+                            val intent = Intent(context, MainSearchActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                    ) { Text("Sign In") }
+                }
             }
-        ) { Text("Sign In") }
+        }
     }
 }
 

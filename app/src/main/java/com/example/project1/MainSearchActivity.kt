@@ -120,45 +120,44 @@ fun SearchView(modifier: Modifier = Modifier) {
             }
         }
 
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).height(150.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            ),
-            border = BorderStroke(1.dp, Color.Gray)
+        SearchCard(
+            title = "Local News",
+            onClick = {}
+        )
 
-        ) {
-            Row() {
-                Button(
-                    onClick = {},
-                    modifier = Modifier.padding(5.dp, 0.dp, 5.dp, 0.dp)
-                ) {
-                    Text("Local News")
-                }
-            }
-        }
-
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).height(150.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            ),
-            border = BorderStroke(1.dp, Color.Gray)
-
-        ) {
-            Row() {
-                Button(
-                    onClick = {},
-                    modifier = Modifier.padding(5.dp, 0.dp, 5.dp, 0.dp)
-                ) {
-                    Text("Top Headlines")
-                }
-            }
-        }
+        SearchCard(
+            title = "Top Headlines",
+            onClick = {}
+        )
 
     }
 
 }
+
+@Composable
+fun SearchCard(title: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(16.dp).height(150.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        border = BorderStroke(1.dp, Color.Gray),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = title)
+            }
+        }
+    }
+}
+
 
 
 @Preview(showBackground = true)
