@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,7 +86,8 @@ fun SearchView(modifier: Modifier = Modifier) {
                         onValueChange = {newValue -> searchTerm = newValue},
                         singleLine = true,
                         label = { Text("Search Terms") },
-                        modifier = Modifier.padding(5.dp, 12.dp, 5.dp, 12.dp)
+                        modifier = Modifier.padding(5.dp, 12.dp, 5.dp, 12.dp),
+                        trailingIcon = { Icon(Icons.Filled.Search, "Search") }
                     )
                 }
 
