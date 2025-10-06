@@ -19,18 +19,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -46,13 +52,21 @@ import androidx.compose.ui.unit.sp
 import com.example.project1.ui.theme.Project1Theme
 
 class SourcesActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = intent;
         enableEdgeToEdge()
         setContent {
             Project1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                        topBar = { CenterAlignedTopAppBar(
+                            title = { Text("Search: " + intent.getStringExtra("SEARCH_TERM").toString())},
+                            actions = {},
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,)
+                        )}
+                    ) { innerPadding ->
                     SourcesView(
                         searchTerm = intent.getStringExtra("SEARCH_TERM").toString(),
                         modifier = Modifier.padding(innerPadding)
@@ -63,20 +77,18 @@ class SourcesActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
     val categories = listOf("Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology")
     var selectedCategory by remember { mutableStateOf(0) }
     var dropdownExpanded by remember { mutableStateOf(false) }
 
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Search: $searchTerm",
-            modifier = Modifier.padding(20.dp)
-        )
 
         Text(
             text = "Category:",
@@ -197,12 +209,22 @@ fun SourceCard(source: SourceData, modifier: Modifier, onClick: () -> Unit) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     Project1Theme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize(),
+                topBar = { CenterAlignedTopAppBar(
+                    title = { Text("Search: Search Term")},
+                    actions = {},
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,)
+                )
+                }
+        ) { innerPadding ->
             SourcesView(
+                searchTerm = "Search Term",
                 modifier = Modifier.padding(innerPadding)
             )
         }

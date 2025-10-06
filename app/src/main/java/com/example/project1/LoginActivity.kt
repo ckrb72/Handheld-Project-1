@@ -18,10 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +41,21 @@ import androidx.compose.ui.unit.dp
 import com.example.project1.ui.theme.Project1Theme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Project1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        CenterAlignedTopAppBar(
+                            title = { Text("Welcome") },
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,)
+                        )
+                    }
+                ) { innerPadding ->
                     LoginScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -58,64 +71,52 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+        modifier = modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(10.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        border = BorderStroke(1.dp, Color.Gray),
     ) {
-
-        Text(
-            text = "Welcome",
-            modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 40.dp)
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).fillMaxHeight(0.5f),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            ),
-            border = BorderStroke(1.dp, Color.Gray),
+        Column(
+            modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Row(
-                    modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {newValue -> username = newValue},
-                        singleLine = true,
-                        label = { Text("Username") }
-                    )
-                }
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = {newValue -> username = newValue},
+                    singleLine = true,
+                    label = { Text("Username") }
+                )
+            }
 
-                Row(
-                    modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { newValue -> password = newValue },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                        label = { Text("Password") }
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        enabled = checkCredentials(username, password),
-                        onClick = {
-                            val intent = Intent(context, MainSearchActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    ) { Text("Sign In") }
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { newValue -> password = newValue },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    label = { Text("Password") }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    enabled = checkCredentials(username, password),
+                    onClick = {
+                        val intent = Intent(context, MainSearchActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                ) { Text("Sign In") }
             }
         }
     }
@@ -127,11 +128,20 @@ fun checkCredentials(username: String, password: String): Boolean {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
     Project1Theme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize(),
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Welcome") },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,)
+                )
+            }
+        ) { innerPadding ->
             LoginScreen(
                 modifier = Modifier.padding(innerPadding)
             )
