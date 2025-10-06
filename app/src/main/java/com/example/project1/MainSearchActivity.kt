@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -87,7 +88,17 @@ fun SearchView(modifier: Modifier = Modifier) {
                         singleLine = true,
                         label = { Text("Search Terms") },
                         modifier = Modifier.padding(5.dp, 12.dp, 5.dp, 12.dp),
-                        trailingIcon = { Icon(Icons.Filled.Search, "Search") }
+                        trailingIcon = { Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search",
+                            modifier = Modifier.clickable{
+                                if (searchTerm.isNotBlank()) {
+                                    val intent = Intent(context, SourcesActivity::class.java)
+                                    intent.putExtra("SEARCH_TERM", searchTerm.toString())
+                                    context.startActivity(intent)
+                                }
+                            }
+                        ) }
                     )
                 }
 

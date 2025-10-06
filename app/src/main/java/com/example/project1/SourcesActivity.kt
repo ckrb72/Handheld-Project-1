@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -127,38 +129,48 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
         }
 
         val source = getSources(searchTerm, categories[selectedCategory])
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.fillMaxHeight(0.80f)
+                .padding(0.dp, 0.dp, 0.dp, 10.dp)
+        ) {
             items(source) { s ->
                 SourceCard(s, Modifier.fillMaxWidth()) {
 
                 }
             }
         }
+
+
+        Button(
+            onClick = {},
+            modifier = Modifier.padding(0.dp, 20.dp)
+        ) {
+            Text("Skip (Search All Sources)")
+        }
     }
 }
 
 fun getSources(searchTerm: String, category: String): List<SourceData> {
     return listOf(
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-        SourceData("News1", "business", "url.com"),
-
+        SourceData("News1", "business", "url.news1..com"),
+        SourceData("News2", "business", "url.news2.com"),
+        SourceData("News3", "business", "url.news3.com"),
+        SourceData("News4", "business", "url.news4.com"),
+        SourceData("News5", "business", "url.news5.com"),
+        SourceData("News6", "business", "url.news6.com"),
+        SourceData("News7", "business", "url.news7.com"),
+        SourceData("News8", "business", "url.news8.com"),
+        SourceData("News9", "business", "url.news9.com"),
+        SourceData("News10", "business", "url.news10.com"),
+        SourceData("News11", "business", "url.news11.com"),
+        SourceData("News12", "business", "url.news12.com"),
+        SourceData("News13", "business", "url.news13.com"),
+        SourceData("News14", "business", "url.news14.com"),
+        SourceData("News15", "business", "url.news15.com"),
+        SourceData("News16", "business", "url.news16.com"),
+        SourceData("News17", "business", "url.news17.com"),
+        SourceData("News18", "business", "url.news18.com"),
+        SourceData("News19", "business", "url.news19.com"),
     )
 }
 
