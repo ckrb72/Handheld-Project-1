@@ -1,0 +1,52 @@
+package com.example.project1
+
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
+
+class ArticleManager {
+
+    val client: OkHttpClient
+
+    init {
+        val builder = OkHttpClient.Builder()
+        val loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        builder.addInterceptor(loggingInterceptor)
+        client = builder.build()
+    }
+
+    suspend fun retrieveArticles(sourceId: String, searchTerm: String, apiKey: String): List<ArticleData> {
+
+        val request = Request.Builder()
+            .url("https://newsapi.org/v2/everything?languages=en&sources=$sourceId&q=$searchTerm&apiKey=$apiKey")
+            .get()
+            .build()
+
+        val response: Response = client.newCall(request).execute();
+        val responseBody = response.body?.string()
+
+        if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
+            val articleList = mutableListOf<ArticleData>()
+            val json = JSONObject(responseBody)
+            val articles = json.getJSONArray("articles")
+            for (i in 0 until articles.length()) {
+                val currentArticle = articles.getJSONObject(i)
+
+                val articleData = ArticleData(
+                    title = currentArticle.getString("title"),
+                    url = currentArticle.getString("url"),
+                    icon = currentArticle.getString("urlToImage"),
+                    description = currentArticle.getString("description")
+                )
+                articleList.add(articleData)
+            }
+
+            return articleList
+        } else {
+            return listOf()
+        }
+    }
+}

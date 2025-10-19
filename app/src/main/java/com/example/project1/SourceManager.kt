@@ -39,7 +39,8 @@ class SourceManager {
                 val sourceData: SourceData = SourceData(
                     name = currentSource.getString("name"),
                     description = currentSource.getString("description"),
-                    category = currentSource.getString("category")
+                    category = currentSource.getString("category"),
+                    id = currentSource.getString("id")
                 )
 
                 sourcesList.add(sourceData)

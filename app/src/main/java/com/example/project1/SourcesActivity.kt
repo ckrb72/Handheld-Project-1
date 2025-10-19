@@ -165,14 +165,26 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
         ) {
             items(sourceList) { s ->
                 SourceCard(s, Modifier.fillMaxWidth()) {
-
+                    val intent = Intent(context, NewsArticleSearchActivity::class.java)
+                    intent.putExtra("CATEGORY", s.category)
+                    intent.putExtra("SEARCH_TERM", searchTerm)
+                    intent.putExtra("SOURCE_ID", s.id)
+                    intent.putExtra("SOURCE_NAME", s.name)
+                    context.startActivity(intent)
                 }
             }
         }
 
 
         Button(
-            onClick = {},
+            onClick = {
+                val intent = Intent(context, NewsArticleSearchActivity::class.java)
+                intent.putExtra("SEARCH_TERM", searchTerm)
+                intent.putExtra("CATEGORY", categories[selectedCategory])
+                intent.putExtra("SOURCE_ID", "")
+                intent.putExtra("SOURCE_NAME", "")
+                context.startActivity(intent)
+            },
             modifier = Modifier.padding(0.dp, 20.dp)
         ) {
             Text("Skip (Search All Sources)")
@@ -194,9 +206,9 @@ fun SourceCard(source: SourceData, modifier: Modifier, onClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Name: $source.name")
-            Text("Description: $source.description")
-            Text("Category: $source.category")
+            Text("Name: " + source.name)
+            Text("Description: " + source.description)
+            Text("Category: " + source.category)
         }
     }
 }
