@@ -1,7 +1,7 @@
 package com.example.project1
 
 data class SourceData(
-    val title: String,
+    val name: String,
+    val description: String,
     val category: String,
-    val url: String
 )

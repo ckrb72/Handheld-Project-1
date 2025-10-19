@@ -38,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project1.ui.theme.Project1Theme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SourcesActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +86,12 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
     val categories = listOf("Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology")
     var selectedCategory by remember { mutableStateOf(0) }
     var dropdownExpanded by remember { mutableStateOf(false) }
+
+
+    val context = LocalContext.current
+    val apiKey = context.getString(R.string.NEWS_API_KEY)
+    val sourcesManager = remember { SourceManager() }
+    var sourceList by remember { mutableStateOf<List<SourceData>>(emptyList()) }
 
 
     Column(
@@ -140,12 +149,21 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
             }
         }
 
-        val source = getSources(searchTerm, categories[selectedCategory])
+
+
+        LaunchedEffect(selectedCategory) {
+            val result = withContext(Dispatchers.IO) {
+                sourcesManager.retrieveSources(categories[selectedCategory].lowercase(), apiKey)
+            }
+            sourceList = result;
+        }
+
+        //val source = getSources(searchTerm, categories[selectedCategory])
         LazyColumn(
             modifier = Modifier.fillMaxHeight(0.80f)
                 .padding(0.dp, 0.dp, 0.dp, 10.dp)
         ) {
-            items(source) { s ->
+            items(sourceList) { s ->
                 SourceCard(s, Modifier.fillMaxWidth()) {
 
                 }
@@ -162,30 +180,6 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
     }
 }
 
-fun getSources(searchTerm: String, category: String): List<SourceData> {
-    return listOf(
-        SourceData("News1", "business", "url.news1..com"),
-        SourceData("News2", "business", "url.news2.com"),
-        SourceData("News3", "business", "url.news3.com"),
-        SourceData("News4", "business", "url.news4.com"),
-        SourceData("News5", "business", "url.news5.com"),
-        SourceData("News6", "business", "url.news6.com"),
-        SourceData("News7", "business", "url.news7.com"),
-        SourceData("News8", "business", "url.news8.com"),
-        SourceData("News9", "business", "url.news9.com"),
-        SourceData("News10", "business", "url.news10.com"),
-        SourceData("News11", "business", "url.news11.com"),
-        SourceData("News12", "business", "url.news12.com"),
-        SourceData("News13", "business", "url.news13.com"),
-        SourceData("News14", "business", "url.news14.com"),
-        SourceData("News15", "business", "url.news15.com"),
-        SourceData("News16", "business", "url.news16.com"),
-        SourceData("News17", "business", "url.news17.com"),
-        SourceData("News18", "business", "url.news18.com"),
-        SourceData("News19", "business", "url.news19.com"),
-    )
-}
-
 @Composable
 fun SourceCard(source: SourceData, modifier: Modifier, onClick: () -> Unit) {
     Card(
@@ -200,10 +194,9 @@ fun SourceCard(source: SourceData, modifier: Modifier, onClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(source.title + ":")
-            Text(source.url)
-
-            Text(source.category)
+            Text("Name: $source.name")
+            Text("Description: $source.description")
+            Text("Category: $source.category")
         }
     }
 }
