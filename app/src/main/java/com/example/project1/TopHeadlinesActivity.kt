@@ -1,6 +1,8 @@
 package com.example.project1
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,12 +10,16 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,9 +44,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import com.example.project1.ui.theme.Project1Theme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.ceil
 
 class TopHeadlinesActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -69,14 +77,18 @@ class TopHeadlinesActivity : ComponentActivity() {
 
 @Composable
 fun TopHeadlines(modifier: Modifier = Modifier) {
-    val categories = listOf("Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology")
-    var selectedCategory by remember { mutableStateOf(0) }
-    var dropdownExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    val categories = listOf("Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology")
+    var selectedCategory by remember { mutableStateOf(prefs.getInt("SavedCategory", 0)) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     val articleManager = remember { ArticleManager() }
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
+    var pageIndex by remember { mutableStateOf(1) }
+    var pageCount by remember { mutableStateOf(0) }
+    val articlePerPage = 20;
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -124,7 +136,12 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
                             text = { Text(item) },
                             onClick = {
                                 selectedCategory = index
+                                prefs.edit { putInt("SavedCategory", selectedCategory) }
                                 dropdownExpanded = false
+                                pageIndex = 1
+
+                                // Might not need this
+                                pageCount = 1
                             }
                         )
                     }
@@ -132,14 +149,54 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
             }
         }
 
-        LaunchedEffect(selectedCategory) {
+        LaunchedEffect(selectedCategory, pageIndex) {
             val result = withContext(Dispatchers.IO) {
-                articleManager.retrieveTopHeadlines(categories[selectedCategory].lowercase(), apiKey)
+                articleManager.retrieveTopHeadlines(categories[selectedCategory].lowercase(), pageIndex, apiKey)
             }
-            articleList = result
+            articleList = result.first
+            pageCount = ceil(result.second / articlePerPage.toDouble()).toInt()
+            Log.d("ARTICLES", "Page Count: " + pageCount)
         }
 
+        val fakeData = getFakeData()
+
         // Do page stuff
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+                .fillMaxHeight(0.90f)
+        ) {
+            items(articleList) { article ->
+                ArticleCard(article, Modifier) {
+
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = {
+                    pageIndex--
+                },
+                enabled = (pageIndex != 1)
+            ) {
+                Text("Previous")
+            }
+
+            Text("$pageIndex / $pageCount")
+
+            Button(
+                onClick = {
+                    pageIndex++
+                },
+                enabled = (pageIndex != pageCount)
+            ) {
+                Text("Next")
+            }
+        }
     }
 }
 
