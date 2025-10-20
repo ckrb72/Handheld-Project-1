@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -49,5 +50,43 @@ class ArticleManager {
         } else {
             return listOf()
         }
+    }
+
+    suspend fun retrieveLocalArticles(location: String, apiKey: String): List<ArticleData> {
+
+        Log.d("GEOCODE", location)
+        val request = Request.Builder()
+            .url("https://newsapi.org/v2/everything?&q=$location&apiKey=$apiKey")
+            .get()
+            .build()
+
+        val response: Response = client.newCall(request).execute();
+        val responseBody = response.body?.string()
+
+        if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
+            val articleList = mutableListOf<ArticleData>()
+            val json = JSONObject(responseBody)
+            val articles = json.getJSONArray("articles")
+            for (i in 0 until articles.length()) {
+                val currentArticle = articles.getJSONObject(i)
+
+                val articleData = ArticleData(
+                    title = currentArticle.getString("title"),
+                    url = currentArticle.getString("url"),
+                    icon = currentArticle.getString("urlToImage"),
+                    description = currentArticle.getString("description"),
+                    source = currentArticle.getJSONObject("source").getString("name")
+                )
+                articleList.add(articleData)
+            }
+
+            return articleList
+        } else {
+            return listOf()
+        }
+    }
+
+    suspend fun retrieveTopHeadlines(category: String, apiKey: String): List<ArticleData> {
+
     }
 }

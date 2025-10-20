@@ -13,9 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Project1">
+        <activity
+            android:name=".TopHeadlinesActivity"
+            android:exported="false"
+            android:label="@string/title_activity_top_headlines"
+            android:theme="@style/Theme.Project1" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+
         <activity
             android:name=".MapsActivity"
             android:exported="false"

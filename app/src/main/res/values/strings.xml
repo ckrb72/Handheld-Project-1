@@ -4,4 +4,5 @@
     <string name="title_activity_sources">SourcesActivity</string>
     <string name="title_activity_news_article_search">NewsArticleSearchActivity</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_top_headlines">TopHeadlinesActivity</string>
 </resources>

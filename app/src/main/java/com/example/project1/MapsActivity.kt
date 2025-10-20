@@ -79,10 +79,10 @@ suspend fun getAddressGeocodeCurrent(context: android.content.Context, latLng: L
                 override fun onGeocode(addressList: MutableList<Address>) {
                     val result = if (addressList.isNotEmpty()) {
                         val address = addressList[0]
-                        //val city = address.locality ?: "Unknown City"
+                        val city = address.locality ?: "Unknown City"
                         val state = address.adminArea ?: "Unknown State"
                         val country = address.countryName ?: "Unknown Country"
-                        "$state, $country"
+                        "$city, $state, $country"
                     } else {
                         "No address found."
                     }
@@ -105,12 +105,28 @@ fun MapsView(modifier: Modifier = Modifier) {
     var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     var addressInfo by remember { mutableStateOf("Long Click on Map") }
     val context = LocalContext.current
+    var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
+    val articleManager = remember { ArticleManager() }
+    val apiKey = context.getString(R.string.NEWS_API_KEY)
 
+    // This is called again every time the marker position is changed, which happens whenever we long click
     LaunchedEffect(markerPosition) {
         markerPosition?.let { latLng ->
             addressInfo = withContext(Dispatchers.IO) {
                 getAddressGeocodeCurrent(context, latLng)
             }
+
+            val locationList: List<String> = addressInfo.split(", ")
+            val result = withContext(Dispatchers.IO) {
+                var location = locationList[1]
+                if (locationList[1] == "Unknown State")
+                {
+                    location = locationList[2]
+                }
+                articleManager.retrieveLocalArticles(location, apiKey)
+            }
+
+            articleList = result
         }
     }
 
@@ -126,13 +142,12 @@ fun MapsView(modifier: Modifier = Modifier) {
                 addressInfo = "Resolving address..."
             }
         ) {
+
             markerPosition?.let { position ->
                 Marker(state = MarkerState(position = position),
                     title = addressInfo,
-                    snippet = "Lat: $position.latitude Lng: $position.longitude"
+                    snippet = "Lat: " + position.latitude + "Lng: " + position.longitude
                 )
-
-                Log.d("ADDRESS", addressInfo)
             }
         }
 
@@ -148,7 +163,7 @@ fun MapsView(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize()
                         .padding(10.dp)
                 ) {
-                    items(fakeArticles) { article ->
+                    items(articleList) { article ->
                         ArticleRowCard(article) {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
                                 data = Uri.parse(article.url)

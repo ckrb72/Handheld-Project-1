@@ -140,7 +140,10 @@ fun SearchView(modifier: Modifier = Modifier) {
 
         SearchCard(
             title = "Top Headlines",
-            onClick = {}
+            onClick = {
+                val intent = Intent(context, TopHeadlinesActivity::class.java)
+                context.startActivity(intent)
+            }
         )
 
     }
