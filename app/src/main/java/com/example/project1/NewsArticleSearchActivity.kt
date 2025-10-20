@@ -103,7 +103,7 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
             modifier = Modifier.fillMaxHeight()
                 .padding(0.dp, 0.dp, 0.dp, 10.dp)
         ) {
-            items(fakeList) { a ->
+            items(articleList) { a ->
                 ArticleCard(a, Modifier.fillMaxWidth()) {
                     val intent = Intent(Intent.ACTION_VIEW).apply {
                         data = Uri.parse(a.url)
@@ -153,15 +153,15 @@ fun ArticleCard(article: ArticleData, modifier: Modifier, onClick: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = null
-                )
-//                AsyncImage(
-//                    model = article.icon,
-//                    contentDescription = null,
-//                    modifier = Modifier.size(60.dp)
+//                Image(
+//                    painter = painterResource(R.drawable.ic_launcher_background),
+//                    contentDescription = null
 //                )
+                AsyncImage(
+                    model = article.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
             }
             Column(
                 modifier = Modifier.fillMaxWidth(),

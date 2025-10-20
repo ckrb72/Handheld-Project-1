@@ -56,7 +56,7 @@ class ArticleManager {
 
         Log.d("GEOCODE", location)
         val request = Request.Builder()
-            .url("https://newsapi.org/v2/everything?&q=$location&apiKey=$apiKey")
+            .url("https://newsapi.org/v2/everything?q=$location&searchIn=title&apiKey=$apiKey")
             .get()
             .build()
 

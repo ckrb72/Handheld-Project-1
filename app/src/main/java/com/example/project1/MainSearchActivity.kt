@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import com.example.project1.ui.theme.Project1Theme
 
 class MainSearchActivity : ComponentActivity() {
@@ -72,9 +74,9 @@ class MainSearchActivity : ComponentActivity() {
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier) {
-
-    var searchTerm by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var searchTerm by remember { mutableStateOf(prefs.getString("SEARCH_TERM", "") ?: "Enter Username") }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -105,6 +107,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                         contentDescription = "Search",
                         modifier = Modifier.clickable{
                             if (searchTerm.isNotBlank()) {
+                                prefs.edit { putString("SEARCH_TERM", searchTerm) }
                                 val intent = Intent(context, SourcesActivity::class.java)
                                 intent.putExtra("SEARCH_TERM", searchTerm.toString())
                                 context.startActivity(intent)
@@ -117,6 +120,7 @@ fun SearchView(modifier: Modifier = Modifier) {
                 Button(
                     enabled = searchTerm.isNotBlank(),
                     onClick = {
+                        prefs.edit { putString("SEARCH_TERM", searchTerm) }
                         val intent = Intent(context, SourcesActivity::class.java)
                         intent.putExtra("SEARCH_TERM", searchTerm.toString())
                         context.startActivity(intent)

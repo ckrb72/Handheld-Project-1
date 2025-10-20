@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.content.Context
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -39,13 +41,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import coil.compose.AsyncImage
 import com.example.project1.ui.theme.Project1Theme
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -103,16 +109,16 @@ suspend fun getAddressGeocodeCurrent(context: android.content.Context, latLng: L
 @Composable
 fun MapsView(modifier: Modifier = Modifier) {
     val staffordVA = LatLng(38.4221, -77.4083)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(staffordVA, 10.0f)
-    }
-    var markerPosition by remember { mutableStateOf<LatLng?>(null) }
     var addressInfo by remember { mutableStateOf("Long Click on Map") }
     val context = LocalContext.current
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
     val articleManager = remember { ArticleManager() }
     val apiKey = context.getString(R.string.NEWS_API_KEY)
-
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var markerPosition by remember { mutableStateOf<LatLng?>(LatLng(prefs.getFloat("MapLatitude", 0.0f).toDouble(), prefs.getFloat("MapLongitude", 0.0f).toDouble())) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(prefs.getFloat("MapLatitude", 0.0f).toDouble(), prefs.getFloat("MapLongitude", 0.0f).toDouble()), 10.0f)
+    }
     // This is called again every time the marker position is changed, which happens whenever we long click
     LaunchedEffect(markerPosition) {
         markerPosition?.let { latLng ->
@@ -143,6 +149,9 @@ fun MapsView(modifier: Modifier = Modifier) {
             cameraPositionState = cameraPositionState,
             onMapLongClick = { latLng ->
                 markerPosition = latLng
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, cameraPositionState.position.zoom)
+                prefs.edit { putFloat("MapLatitude", latLng.latitude.toFloat()) }
+                prefs.edit { putFloat("MapLongitude", latLng.longitude.toFloat()) }
                 addressInfo = "Resolving address..."
             }
         ) {
@@ -157,7 +166,7 @@ fun MapsView(modifier: Modifier = Modifier) {
 
         val fakeArticles = getFakeData()
 
-//        markerPosition?.let {
+        markerPosition?.let {
             Card(
                 modifier = Modifier.fillMaxWidth(0.85f)
                     .fillMaxHeight(0.25f)
@@ -167,7 +176,7 @@ fun MapsView(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize()
                         .padding(10.dp)
                 ) {
-                    items(fakeArticles) { article ->
+                    items(articleList) { article ->
                         ArticleRowCard(article, modifier = Modifier.padding(5.dp)) {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
                                 data = Uri.parse(article.url)
@@ -176,7 +185,7 @@ fun MapsView(modifier: Modifier = Modifier) {
                         }
                     }
                 }
-//            }
+            }
         }
     }
 }
@@ -203,25 +212,26 @@ fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick:
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
+//                Image(
+//                    painter = painterResource(R.drawable.ic_launcher_background),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(100.dp)
+//                )
+                AsyncImage(
+                    model = article.icon,
                     contentDescription = null,
                     modifier = Modifier.size(100.dp)
                 )
-//                AsyncImage(
-//                    model = article.icon,
-//                    contentDescription = null
-//                )
             }
-            Column(
+            Column (
                 modifier = Modifier.fillMaxHeight()
                     .width(200.dp)
                     .padding(10.dp),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(article.title + "TITLE STUFF", fontSize = 10.sp)
-                Text(article.source + "SOURCE STUFF", fontSize = 10.sp)
-                Text(article.description + "asdfkjsd;lfkdsajfd;klfjds;klfjsda;fklasjflk;sdjfsd;fkljsdfk;ldsjfs;fklsjf;lkdfjds;lkfjd;lkfjasd;lfkdjsklfdjask;flk", fontSize = 10.sp)
+                Text(article.title, fontSize = 10.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline)
+                Text(article.source, fontSize = 10.sp)
+                Text(article.description, fontSize = 10.sp)
 
             }
         }
