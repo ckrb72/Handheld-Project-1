@@ -1,16 +1,23 @@
 package com.example.project1
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -31,8 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.project1.ui.theme.Project1Theme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,7 +60,7 @@ class NewsArticleSearchActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize(),
                 topBar = {
                     CenterAlignedTopAppBar(
-                        title = { Text("Search: " + intent.getStringExtra("SEARCH_TERM") + " Category: " + intent.getStringExtra("CATEGORY") + " ID: " + intent.getStringExtra("SOURCE_ID")) },
+                        title = { Text( intent.getStringExtra("SOURCE_NAME") + " results for " + intent.getStringExtra("SEARCH_TERM")) },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
                             titleContentColor = MaterialTheme.colorScheme.primary,)
                     )
@@ -92,7 +103,10 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
         ) {
             items(fakeList) { a ->
                 ArticleCard(a, Modifier.fillMaxWidth()) {
-
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(a.url)
+                    }
+                    context.startActivity(intent)
                 }
             }
 
@@ -102,39 +116,61 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
 
 fun getFakeData(): List<ArticleData> {
     return listOf<ArticleData>(
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description"),
-        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description")
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source"),
+        ArticleData(title = "Title", icon = "Icon", url = "url", description = "Description", source = "Source")
     )
 }
 
 @Composable
 fun ArticleCard(article: ArticleData, modifier: Modifier, onClick: () -> Unit) {
     Card(
-        modifier = modifier,
+        modifier = modifier.fillMaxHeight(0.1f),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
         border = BorderStroke(1.dp, Color.Gray),
         onClick = onClick
     ) {
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(0.25f)
+            ) {
+                AsyncImage(
+                    model = article.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
 
-            Text("Name: " + article.title)
-            Text("Description: " + article.description)
-            Text("Category: " + article.url)
+            ) {
+                Text(article.title, fontSize = 20.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline)
+                Text(article.source)
+                Text(article.description)
+            }
         }
+//        Column(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//
+//            Text("Name: " + article.title)
+//            Text("Description: " + article.description)
+//            Text("Category: " + article.url)
+//        }
     }
 }
 

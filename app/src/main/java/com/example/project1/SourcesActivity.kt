@@ -64,7 +64,7 @@ class SourcesActivity : ComponentActivity() {
             Project1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize(),
                         topBar = { CenterAlignedTopAppBar(
-                            title = { Text("Search: " + intent.getStringExtra("SEARCH_TERM").toString())},
+                            title = { Text("Search for " + intent.getStringExtra("SEARCH_TERM").toString())},
                             actions = {},
                             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
                                 titleContentColor = MaterialTheme.colorScheme.primary,)
@@ -208,7 +208,6 @@ fun SourceCard(source: SourceData, modifier: Modifier, onClick: () -> Unit) {
         ) {
             Text("Name: " + source.name)
             Text("Description: " + source.description)
-            Text("Category: " + source.category)
         }
     }
 }

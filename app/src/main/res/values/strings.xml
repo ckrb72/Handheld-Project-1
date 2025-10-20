@@ -3,4 +3,5 @@
     <string name="title_activity_main_search">MainSearchActivity</string>
     <string name="title_activity_sources">SourcesActivity</string>
     <string name="title_activity_news_article_search">NewsArticleSearchActivity</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

@@ -39,7 +39,8 @@ class ArticleManager {
                     title = currentArticle.getString("title"),
                     url = currentArticle.getString("url"),
                     icon = currentArticle.getString("urlToImage"),
-                    description = currentArticle.getString("description")
+                    description = currentArticle.getString("description"),
+                    source = currentArticle.getJSONObject("source").getString("name")
                 )
                 articleList.add(articleData)
             }

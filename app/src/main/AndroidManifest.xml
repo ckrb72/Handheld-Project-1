@@ -14,6 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project1">
         <activity
+            android:name=".MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/Theme.Project1" />
+        <activity
             android:name=".NewsArticleSearchActivity"
             android:exported="false"
             android:label="@string/title_activity_news_article_search"
