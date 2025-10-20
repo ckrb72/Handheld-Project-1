@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -145,13 +147,21 @@ fun ArticleCard(article: ArticleData, modifier: Modifier, onClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(0.25f)
+                modifier = Modifier.fillMaxHeight()
+                    .fillMaxWidth(0.25f)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                AsyncImage(
-                    model = article.icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp)
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_background),
+                    contentDescription = null
                 )
+//                AsyncImage(
+//                    model = article.icon,
+//                    contentDescription = null,
+//                    modifier = Modifier.size(60.dp)
+//                )
             }
             Column(
                 modifier = Modifier.fillMaxWidth(),

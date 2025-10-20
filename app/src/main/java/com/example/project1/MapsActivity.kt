@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +36,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project1.ui.theme.Project1Theme
 import com.google.android.gms.maps.model.CameraPosition
@@ -153,7 +157,7 @@ fun MapsView(modifier: Modifier = Modifier) {
 
         val fakeArticles = getFakeData()
 
-        markerPosition?.let {
+//        markerPosition?.let {
             Card(
                 modifier = Modifier.fillMaxWidth(0.85f)
                     .fillMaxHeight(0.25f)
@@ -163,8 +167,8 @@ fun MapsView(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize()
                         .padding(10.dp)
                 ) {
-                    items(articleList) { article ->
-                        ArticleRowCard(article) {
+                    items(fakeArticles) { article ->
+                        ArticleRowCard(article, modifier = Modifier.padding(5.dp)) {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
                                 data = Uri.parse(article.url)
                             }
@@ -172,7 +176,7 @@ fun MapsView(modifier: Modifier = Modifier) {
                         }
                     }
                 }
-            }
+//            }
         }
     }
 }
@@ -181,7 +185,7 @@ fun MapsView(modifier: Modifier = Modifier) {
 fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Card(
         modifier = modifier.fillMaxHeight()
-            .fillMaxWidth(0.25f),
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
@@ -194,22 +198,30 @@ fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick:
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight()
-                    .width(100.dp)
-                    .padding(10.dp)
+                    .fillMaxWidth(0.2f)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                AsyncImage(
-                    model = article.icon,
-                    contentDescription = null
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_background),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
                 )
+//                AsyncImage(
+//                    model = article.icon,
+//                    contentDescription = null
+//                )
             }
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxHeight()
+                    .width(200.dp)
                     .padding(10.dp),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(article.title)
-                Text(article.source)
-                Text(article.description)
+                Text(article.title + "TITLE STUFF", fontSize = 10.sp)
+                Text(article.source + "SOURCE STUFF", fontSize = 10.sp)
+                Text(article.description + "asdfkjsd;lfkdsajfd;klfjds;klfjsda;fklasjflk;sdjfsd;fkljsdfk;ldsjfs;fklsjf;lkdfjds;lkfjd;lkfjasd;lfkdjsklfdjask;flk", fontSize = 10.sp)
 
             }
         }

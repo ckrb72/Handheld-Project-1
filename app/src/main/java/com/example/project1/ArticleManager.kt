@@ -87,6 +87,6 @@ class ArticleManager {
     }
 
     suspend fun retrieveTopHeadlines(category: String, apiKey: String): List<ArticleData> {
-
+        return listOf()
     }
 }
