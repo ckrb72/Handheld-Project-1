@@ -12,6 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.project1.ui.theme.Project1Theme
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 class MapsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +26,7 @@ class MapsActivity : ComponentActivity() {
         setContent {
             Project1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    MapsView(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -31,17 +36,24 @@ class MapsActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MapsView(modifier: Modifier = Modifier) {
+    val staffordVA = LatLng(38.4221, -77.4083)
+    val cameraPositionState = rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(staffordVA, 10.0f) }
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        Marker(state = MarkerState(position = staffordVA),
+            title = "Stafford",
+            snippet = "Marker in Stafford"
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview3() {
     Project1Theme {
-        Greeting("Android")
+        MapsView()
     }
 }

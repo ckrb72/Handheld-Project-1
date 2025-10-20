@@ -132,7 +132,10 @@ fun SearchView(modifier: Modifier = Modifier) {
 
         SearchCard(
             title = "Local News",
-            onClick = {}
+            onClick = {
+                val intent = Intent(context, MapsActivity::class.java)
+                context.startActivity(intent)
+            }
         )
 
         SearchCard(
