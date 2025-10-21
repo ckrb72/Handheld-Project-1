@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import com.example.project1.ui.theme.Project1Theme
 
 class MainActivity : ComponentActivity() {
@@ -67,9 +70,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var password by remember { mutableStateOf("") }
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var username by remember { mutableStateOf(prefs.getString("USERNAME", "").toString()) }
 
     Card(
         modifier = modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(10.dp),
@@ -113,6 +117,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 Button(
                     enabled = checkCredentials(username, password),
                     onClick = {
+                        prefs.edit { putString("USERNAME", username) }
                         val intent = Intent(context, MainSearchActivity::class.java)
                         context.startActivity(intent)
                     }
