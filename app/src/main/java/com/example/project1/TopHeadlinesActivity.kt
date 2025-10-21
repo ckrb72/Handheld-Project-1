@@ -175,20 +175,30 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
                 CircularProgressIndicator()
             }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-                    .fillMaxHeight(0.90f)
-            ) {
-                items(articleList) { article ->
-                    ArticleCard(article, Modifier) { context ->
+            if (articleList.count() == 0) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("No Articles Found")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                        .fillMaxHeight(0.90f)
+                ) {
+                    items(articleList) { article ->
+                        ArticleCard(article, Modifier) { context ->
 
-                        try {
-                            if (!article.url.isNullOrBlank()) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                                context.startActivity(intent)
+                            try {
+                                if (!article.url.isNullOrBlank()) {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                    context.startActivity(intent)
+                                }
+                            } catch(e: Exception) {
+                                Log.d("EXCEPTION", "" + e.message)
                             }
-                        } catch(e: Exception) {
-                            Log.d("EXCEPTION", "" + e.message)
                         }
                     }
                 }
