@@ -100,26 +100,36 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
     val fakeList = getFakeData()
     if (isLoading) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             CircularProgressIndicator()
         }
     } else {
-        LazyColumn(
-            modifier = modifier.fillMaxHeight()
-                .padding(0.dp, 0.dp, 0.dp, 10.dp)
-        ) {
-            items(articleList) { article ->
-                ArticleCard(article, Modifier.fillMaxWidth().padding(10.dp)) { context ->
-                    try {
-                        if (!article.url.isNullOrBlank()) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                            context.startActivity(intent)
+        if (articleList.count() == 0) {
+            Column(
+                modifier = modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("No Articles Found")
+            }
+        } else {
+            LazyColumn(
+                modifier = modifier.fillMaxHeight()
+                    .padding(0.dp, 0.dp, 0.dp, 10.dp)
+            ) {
+                items(articleList) { article ->
+                    ArticleCard(article, Modifier.fillMaxWidth().padding(10.dp)) { context ->
+                        try {
+                            if (!article.url.isNullOrBlank()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                context.startActivity(intent)
+                            }
+                        } catch(e: Exception) {
+                            Log.d("EXCEPTION", "" + e.message)
                         }
-                    } catch(e: Exception) {
-                        Log.d("EXCEPTION", "" + e.message)
                     }
                 }
             }

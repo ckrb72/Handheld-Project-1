@@ -111,7 +111,8 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
             border = BorderStroke(1.dp, Color.Gray),
             onClick = {
                 dropdownExpanded = true
-            }
+            },
+            enabled = !isLoading
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -202,7 +203,7 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
                     onClick = {
                         pageIndex--
                     },
-                    enabled = (pageIndex != 1)
+                    enabled = (pageIndex != 1) && !isLoading
                 ) {
                     Text("Previous")
                 }
@@ -213,7 +214,7 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
                     onClick = {
                         pageIndex++
                     },
-                    enabled = (pageIndex != pageCount)
+                    enabled = (pageIndex != pageCount) && !isLoading
                 ) {
                     Text("Next")
                 }

@@ -185,19 +185,29 @@ fun MapsView(modifier: Modifier = Modifier) {
                         CircularProgressIndicator()
                     }
                 } else {
-                    LazyRow(
-                        modifier = Modifier.fillMaxSize()
-                            .padding(10.dp)
-                    ) {
-                        items(articleList) { article ->
-                            ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
-                                try {
-                                    if (!article.url.isNullOrBlank()) {
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                                        context.startActivity(intent)
+                    if (articleList.count() == 0) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("No Articles Found")
+                        }
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.fillMaxSize()
+                                .padding(10.dp)
+                        ) {
+                            items(articleList) { article ->
+                                ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
+                                    try {
+                                        if (!article.url.isNullOrBlank()) {
+                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                            context.startActivity(intent)
+                                        }
+                                    } catch(e: Exception) {
+                                        Log.d("EXCEPTION", "" + e.message)
                                     }
-                                } catch(e: Exception) {
-                                    Log.d("EXCEPTION", "" + e.message)
                                 }
                             }
                         }

@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import com.example.project1.ui.theme.Project1Theme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -88,15 +90,13 @@ class SourcesActivity : ComponentActivity() {
 @Composable
 fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
     val categories = listOf("Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology")
-    var selectedCategory by remember { mutableStateOf(0) }
     var dropdownExpanded by remember { mutableStateOf(false) }
-
-
     val context = LocalContext.current
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     var sourceList by remember { mutableStateOf<List<SourceData>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
-
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var selectedCategory by remember { mutableStateOf(prefs.getInt("SourcesSavedCategory", 0)) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -117,7 +117,8 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
             border = BorderStroke(1.dp, Color.Gray),
             onClick = {
                 dropdownExpanded = true
-            }
+            },
+            enabled = !isLoading
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -145,6 +146,7 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
                             text = { Text(item) },
                             onClick = {
                                 selectedCategory = index
+                                prefs.edit { putInt("SourcesSavedCategory", selectedCategory) }
                                 dropdownExpanded = false
                             }
                         )
@@ -191,6 +193,7 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
         }
 
         Button(
+            enabled = !isLoading,
             onClick = {
                 val intent = Intent(context, NewsArticleSearchActivity::class.java)
                 intent.putExtra("SEARCH_TERM", searchTerm)
