@@ -160,7 +160,7 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
             }
             articleList = result.first
             pageCount = ceil(result.second / articlePerPage.toDouble()).toInt()
-            Log.d("ARTICLES", "Page Count: " + pageCount)
+            if (pageCount > 5) pageCount = 5
             isLoading = false
         }
 
