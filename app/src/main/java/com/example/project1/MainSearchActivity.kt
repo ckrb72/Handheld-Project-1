@@ -76,7 +76,7 @@ class MainSearchActivity : ComponentActivity() {
 fun SearchView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
-    var searchTerm by remember { mutableStateOf(prefs.getString("SEARCH_TERM", "") ?: "Enter Username") }
+    var searchTerm by remember { mutableStateOf(prefs.getString("SEARCH_TERM", "") ?: "") }
 
     Column(
         modifier = modifier.fillMaxSize(),

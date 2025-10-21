@@ -162,8 +162,8 @@ fun MapsView(modifier: Modifier = Modifier) {
 
             markerPosition?.let { position ->
                 Marker(state = MarkerState(position = position),
-                    title = addressInfo,
-                    snippet = "Lat: " + position.latitude + "Lng: " + position.longitude
+                    title = "Results for: $addressInfo",
+                    snippet = "(" + position.latitude + ", " + position.longitude + ")"
                 )
             }
         }
