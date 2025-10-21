@@ -86,7 +86,6 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
     var selectedCategory by remember { mutableStateOf(prefs.getInt("SavedCategory", 0)) }
     var dropdownExpanded by remember { mutableStateOf(false) }
     val apiKey = context.getString(R.string.NEWS_API_KEY)
-    val articleManager = remember { ArticleManager() }
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
     var pageIndex by remember { mutableStateOf(1) }
     var pageCount by remember { mutableStateOf(0) }
@@ -153,7 +152,7 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
 
         LaunchedEffect(selectedCategory, pageIndex) {
             val result = withContext(Dispatchers.IO) {
-                articleManager.retrieveTopHeadlines(categories[selectedCategory].lowercase(), pageIndex, apiKey)
+                ArticleManager.retrieveTopHeadlines(categories[selectedCategory].lowercase(), pageIndex, apiKey)
             }
             articleList = result.first
             pageCount = ceil(result.second / articlePerPage.toDouble()).toInt()
@@ -169,9 +168,14 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
         ) {
             items(articleList) { article ->
                 ArticleCard(article, Modifier) { context ->
-                    if (!article.url.isNullOrBlank()) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                        context.startActivity(intent)
+
+                    try {
+                        if (!article.url.isNullOrBlank()) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                            context.startActivity(intent)
+                        }
+                    } catch(e: Exception) {
+                        Log.d("EXCEPTION", "" + e.message)
                     }
                 }
             }

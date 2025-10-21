@@ -93,7 +93,6 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
 
     val context = LocalContext.current
     val apiKey = context.getString(R.string.NEWS_API_KEY)
-    val sourcesManager = remember { SourceManager() }
     var sourceList by remember { mutableStateOf<List<SourceData>>(emptyList()) }
 
 
@@ -156,7 +155,7 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
 
         LaunchedEffect(selectedCategory) {
             val result = withContext(Dispatchers.IO) {
-                sourcesManager.retrieveSources(categories[selectedCategory].lowercase(), apiKey)
+                ArticleManager.retrieveSources(categories[selectedCategory].lowercase(), apiKey)
             }
             sourceList = result;
         }

@@ -112,7 +112,6 @@ fun MapsView(modifier: Modifier = Modifier) {
     var addressInfo by remember { mutableStateOf("Long Click on Map") }
     val context = LocalContext.current
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
-    val articleManager = remember { ArticleManager() }
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     var markerPosition by remember { mutableStateOf<LatLng?>(LatLng(prefs.getFloat("MapLatitude", 0.0f).toDouble(), prefs.getFloat("MapLongitude", 0.0f).toDouble())) }
@@ -133,7 +132,7 @@ fun MapsView(modifier: Modifier = Modifier) {
                 {
                     location = locationList[2]
                 }
-                articleManager.retrieveLocalArticles(location, apiKey)
+                ArticleManager.retrieveLocalArticles(location, apiKey)
             }
 
             articleList = result
@@ -178,9 +177,13 @@ fun MapsView(modifier: Modifier = Modifier) {
                 ) {
                     items(articleList) { article ->
                         ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
-                            if (!article.url.isNullOrBlank()) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                                context.startActivity(intent)
+                            try {
+                                if (!article.url.isNullOrBlank()) {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                    context.startActivity(intent)
+                                }
+                            } catch(e: Exception) {
+                                Log.d("EXCEPTION", "" + e.message)
                             }
                         }
                     }

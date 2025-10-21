@@ -85,11 +85,10 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
     val context = LocalContext.current
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
-    val articleManager = remember { ArticleManager() }
 
     LaunchedEffect(category, searchTerm, sourceId) {
         val result = withContext(Dispatchers.IO) {
-            articleManager.retrieveArticles(sourceId = sourceId, searchTerm = searchTerm, apiKey = apiKey)
+            ArticleManager.retrieveArticles(sourceId = sourceId, searchTerm = searchTerm, apiKey = apiKey)
         }
 
         articleList = result;
@@ -106,9 +105,13 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
         ) {
             items(articleList) { article ->
                 ArticleCard(article, Modifier.fillMaxWidth()) { context ->
-                    if (!article.url.isNullOrBlank()) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                        context.startActivity(intent)
+                    try {
+                        if (!article.url.isNullOrBlank()) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                            context.startActivity(intent)
+                        }
+                    } catch(e: Exception) {
+                        Log.d("EXCEPTION", "" + e.message)
                     }
                 }
             }
