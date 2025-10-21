@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -85,26 +86,33 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
     val context = LocalContext.current
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(category, searchTerm, sourceId) {
+        isLoading = true
         val result = withContext(Dispatchers.IO) {
             ArticleManager.retrieveArticles(sourceId = sourceId, searchTerm = searchTerm, apiKey = apiKey)
         }
-
         articleList = result;
+        isLoading = false
     }
 
     val fakeList = getFakeData()
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    if (isLoading) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
         LazyColumn(
-            modifier = Modifier.fillMaxHeight()
+            modifier = modifier.fillMaxHeight()
                 .padding(0.dp, 0.dp, 0.dp, 10.dp)
         ) {
             items(articleList) { article ->
-                ArticleCard(article, Modifier.fillMaxWidth()) { context ->
+                ArticleCard(article, Modifier.fillMaxWidth().padding(10.dp)) { context ->
                     try {
                         if (!article.url.isNullOrBlank()) {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
@@ -115,7 +123,6 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
                     }
                 }
             }
-
         }
     }
 }

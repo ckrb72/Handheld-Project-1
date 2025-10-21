@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -118,8 +119,10 @@ fun MapsView(modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(prefs.getFloat("MapLatitude", 0.0f).toDouble(), prefs.getFloat("MapLongitude", 0.0f).toDouble()), 10.0f)
     }
+    var isLoading by remember { mutableStateOf(false) }
     // This is called again every time the marker position is changed, which happens whenever we long click
     LaunchedEffect(markerPosition) {
+        isLoading = true
         markerPosition?.let { latLng ->
             addressInfo = withContext(Dispatchers.IO) {
                 getAddressGeocodeCurrent(context, latLng)
@@ -136,6 +139,8 @@ fun MapsView(modifier: Modifier = Modifier) {
             }
 
             articleList = result
+
+            isLoading = false
         }
     }
 
@@ -171,19 +176,29 @@ fun MapsView(modifier: Modifier = Modifier) {
                     .fillMaxHeight(0.25f)
                     .padding(0.dp, 0.dp, 0.dp, 25.dp)
             ) {
-                LazyRow(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(10.dp)
-                ) {
-                    items(articleList) { article ->
-                        ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
-                            try {
-                                if (!article.url.isNullOrBlank()) {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                                    context.startActivity(intent)
+                if (isLoading) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(10.dp)
+                    ) {
+                        items(articleList) { article ->
+                            ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
+                                try {
+                                    if (!article.url.isNullOrBlank()) {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                        context.startActivity(intent)
+                                    }
+                                } catch(e: Exception) {
+                                    Log.d("EXCEPTION", "" + e.message)
                                 }
-                            } catch(e: Exception) {
-                                Log.d("EXCEPTION", "" + e.message)
                             }
                         }
                     }

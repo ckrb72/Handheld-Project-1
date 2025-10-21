@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -89,6 +90,7 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
     var articleList by remember { mutableStateOf<List<ArticleData>>(emptyList()) }
     var pageIndex by remember { mutableStateOf(1) }
     var pageCount by remember { mutableStateOf(0) }
+    var isLoading by remember { mutableStateOf(false) }
     val articlePerPage = 20;
 
     Column(
@@ -151,59 +153,70 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
         }
 
         LaunchedEffect(selectedCategory, pageIndex) {
+            isLoading = true
             val result = withContext(Dispatchers.IO) {
                 ArticleManager.retrieveTopHeadlines(categories[selectedCategory].lowercase(), pageIndex, apiKey)
             }
             articleList = result.first
             pageCount = ceil(result.second / articlePerPage.toDouble()).toInt()
             Log.d("ARTICLES", "Page Count: " + pageCount)
+            isLoading = false
         }
 
         val fakeData = getFakeData()
 
-        // Do page stuff
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-                .fillMaxHeight(0.90f)
-        ) {
-            items(articleList) { article ->
-                ArticleCard(article, Modifier) { context ->
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+                    .fillMaxHeight(0.90f)
+            ) {
+                items(articleList) { article ->
+                    ArticleCard(article, Modifier) { context ->
 
-                    try {
-                        if (!article.url.isNullOrBlank()) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
-                            context.startActivity(intent)
+                        try {
+                            if (!article.url.isNullOrBlank()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                context.startActivity(intent)
+                            }
+                        } catch(e: Exception) {
+                            Log.d("EXCEPTION", "" + e.message)
                         }
-                    } catch(e: Exception) {
-                        Log.d("EXCEPTION", "" + e.message)
                     }
                 }
             }
-        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    pageIndex--
-                },
-                enabled = (pageIndex != 1)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Previous")
-            }
+                Button(
+                    onClick = {
+                        pageIndex--
+                    },
+                    enabled = (pageIndex != 1)
+                ) {
+                    Text("Previous")
+                }
 
-            Text("$pageIndex / $pageCount")
+                Text("$pageIndex / $pageCount")
 
-            Button(
-                onClick = {
-                    pageIndex++
-                },
-                enabled = (pageIndex != pageCount)
-            ) {
-                Text("Next")
+                Button(
+                    onClick = {
+                        pageIndex++
+                    },
+                    enabled = (pageIndex != pageCount)
+                ) {
+                    Text("Next")
+                }
             }
         }
     }

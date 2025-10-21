@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -94,6 +95,7 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
     val context = LocalContext.current
     val apiKey = context.getString(R.string.NEWS_API_KEY)
     var sourceList by remember { mutableStateOf<List<SourceData>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
 
 
     Column(
@@ -154,29 +156,39 @@ fun SourcesView(modifier: Modifier = Modifier, searchTerm: String = "") {
 
 
         LaunchedEffect(selectedCategory) {
+            isLoading = true
             val result = withContext(Dispatchers.IO) {
                 ArticleManager.retrieveSources(categories[selectedCategory].lowercase(), apiKey)
             }
             sourceList = result;
+            isLoading = false
         }
 
-        //val source = getSources(searchTerm, categories[selectedCategory])
-        LazyColumn(
-            modifier = Modifier.fillMaxHeight(0.80f)
-                .padding(0.dp, 0.dp, 0.dp, 10.dp)
-        ) {
-            items(sourceList) { s ->
-                SourceCard(s, Modifier.fillMaxWidth()) {
-                    val intent = Intent(context, NewsArticleSearchActivity::class.java)
-                    intent.putExtra("CATEGORY", s.category)
-                    intent.putExtra("SEARCH_TERM", searchTerm)
-                    intent.putExtra("SOURCE_ID", s.id)
-                    intent.putExtra("SOURCE_NAME", s.name)
-                    context.startActivity(intent)
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxHeight(0.80f)
+                    .padding(0.dp, 0.dp, 0.dp, 10.dp)
+            ) {
+                items(sourceList) { s ->
+                    SourceCard(s, Modifier.fillMaxWidth()) {
+                        val intent = Intent(context, NewsArticleSearchActivity::class.java)
+                        intent.putExtra("CATEGORY", s.category)
+                        intent.putExtra("SEARCH_TERM", searchTerm)
+                        intent.putExtra("SOURCE_ID", s.id)
+                        intent.putExtra("SOURCE_NAME", s.name)
+                        context.startActivity(intent)
+                    }
                 }
             }
         }
-
 
         Button(
             onClick = {
