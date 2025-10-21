@@ -1,5 +1,6 @@
 package com.example.project1
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -62,7 +63,7 @@ class NewsArticleSearchActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize(),
                 topBar = {
                     CenterAlignedTopAppBar(
-                        title = { Text( intent.getStringExtra("SOURCE_NAME") + " results for " + intent.getStringExtra("SEARCH_TERM")) },
+                        title = { Text( intent.getStringExtra("SOURCE_NAME") + " Results for " + intent.getStringExtra("SEARCH_TERM")) },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer,
                             titleContentColor = MaterialTheme.colorScheme.primary,)
                     )
@@ -103,12 +104,12 @@ fun NewsArticleList(category: String, searchTerm: String, sourceId: String, modi
             modifier = Modifier.fillMaxHeight()
                 .padding(0.dp, 0.dp, 0.dp, 10.dp)
         ) {
-            items(articleList) { a ->
-                ArticleCard(a, Modifier.fillMaxWidth()) {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(a.url)
+            items(articleList) { article ->
+                ArticleCard(article, Modifier.fillMaxWidth()) { context ->
+                    if (!article.url.isNullOrBlank()) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                        context.startActivity(intent)
                     }
-                    context.startActivity(intent)
                 }
             }
 
@@ -133,14 +134,15 @@ fun getFakeData(): List<ArticleData> {
 }
 
 @Composable
-fun ArticleCard(article: ArticleData, modifier: Modifier, onClick: () -> Unit) {
+fun ArticleCard(article: ArticleData, modifier: Modifier, onClick: (Context) -> Unit) {
+    val context = LocalContext.current
     Card(
         modifier = modifier.fillMaxHeight(0.1f),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
         border = BorderStroke(1.dp, Color.Gray),
-        onClick = onClick
+        onClick = { onClick(context) }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

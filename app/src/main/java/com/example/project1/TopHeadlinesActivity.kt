@@ -1,6 +1,8 @@
 package com.example.project1
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -166,8 +168,11 @@ fun TopHeadlines(modifier: Modifier = Modifier) {
                 .fillMaxHeight(0.90f)
         ) {
             items(articleList) { article ->
-                ArticleCard(article, Modifier) {
-
+                ArticleCard(article, Modifier) { context ->
+                    if (!article.url.isNullOrBlank()) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                        context.startActivity(intent)
+                    }
                 }
             }
         }

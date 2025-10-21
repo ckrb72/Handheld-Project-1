@@ -177,11 +177,11 @@ fun MapsView(modifier: Modifier = Modifier) {
                         .padding(10.dp)
                 ) {
                     items(articleList) { article ->
-                        ArticleRowCard(article, modifier = Modifier.padding(5.dp)) {
-                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                data = Uri.parse(article.url)
+                        ArticleRowCard(article, modifier = Modifier.padding(5.dp)) { context ->
+                            if (!article.url.isNullOrBlank()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                                context.startActivity(intent)
                             }
-                            context.startActivity(intent)
                         }
                     }
                 }
@@ -191,7 +191,8 @@ fun MapsView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick: (Context) -> Unit) {
+    val context = LocalContext.current
     Card(
         modifier = modifier.fillMaxHeight()
             .fillMaxWidth(),
@@ -199,7 +200,7 @@ fun ArticleRowCard(article: ArticleData, modifier: Modifier = Modifier, onClick:
             defaultElevation = 6.dp
         ),
         border = BorderStroke(1.dp, Color.Gray),
-        onClick = onClick
+        onClick = { onClick(context) }
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
